@@ -1,2 +1,3 @@
 # VoidEXP
-Meu melhor malware
+Dependencias: NetFramework4.0
+### My best GDI malware
